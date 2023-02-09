@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- monitorInterval: Log4j가 파일의 변경 여부를 확인하는 주기(분 단위) -->
+<Configuration monitorInterval="30" status="debug" name="XMLConfigTest">
+    <!-- Properties log 파일 경로 정의 -->
+    <Properties>
+    	<Property name="logsPath">/data/log-backup/본인의경로명/webapp/logs</Property>
+    </Properties>  
+    
+    <!-- log 출력 위치 및 설정 정의-->
+    <Appenders>
+        <!-- 콘솔에 출력하도록 정의--> 
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%C{1}(%M:%L)] - %m%n"/>
+        </Console>
+        
+        <!-- log 파일을 생성 -->
+        <RollingFile name="TRALOG" append="true" fileName="${logsPath}/tomcat.log" filePattern="${logsPath}/tomcat.log.%d{yyyy-MM-dd}">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p [%t] [%l] %3x - %m%n"/>
+            
+            <!-- 
+           	<TimeBasedTriggeringPolicy>의 interval은 파일 패턴의 날짜 단위의 최소값으로 계산된다. 
+           	만약 파일패턴의 날짜 포맷이 초단위까지 있다면, interval을 1로하면 1초에 한번씩 압축이 되는 셈 
+            -->
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+            
+            <DefaultRolloverStrategy max="5" />
+            <ThresholdFilter level="TRACE" onMatch="ACCEPT" onMismatch="DENY"/>
+        </RollingFile>
+        
+        <RollingFile name="DEBUGLOG" append="true" fileName="${logsPath}/debug/debug.log" filePattern="${logsPath}/debug/debug.log.%d{yyyy-MM-dd-HH}">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p [%t] [%l] %3x - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+        </RollingFile>
+        
+        <RollingFile name="INFOLOG" append="true" fileName="${logsPath}/info/info.log" filePattern="${logsPath}/info/info.log.%d{yyyy-MM-dd}">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p [%t] [%l] %3x - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+        </RollingFile>
+        
+        <RollingFile name="ERRORLOG" append="true" fileName="${logsPath}/error/error.log" filePattern="${logsPath}/error/error.log.%d{yyyy-MM-dd}">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p [%t] [%l] %3x - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+        </RollingFile>
+    </Appenders>
+
+    <!--log level 및 appender 설정에 따른 출력 대상 설정-->
+    <Loggers>
+    	<!-- Spring Framework logger -->
+		<Logger name="org.springframework" level="DEBUG" additivity="false">
+			<AppenderRef ref="DEBUGLOG" />
+		</Logger>
+		<Logger name="org.springframework.web.servlet.view.json" level="DEBUG" additivity="false">
+			<AppenderRef ref="DEBUGLOG" />
+		</Logger>
+		
+		<!-- Jakarta Commons logger -->
+		<Logger name="org.apache" level="OFF" additivity="false">
+		</Logger>
+		
+		<!-- SQL logger -->
+		<Logger name="com.ibatis" level="DEBUG" additivity="false">
+			<AppenderRef ref="DEBUGLOG" />
+		</Logger>
+		<Logger name="java.sql.Connection" level="DEBUG" additivity="false">
+			<AppenderRef ref="DEBUGLOG" />
+		</Logger>
+		<Logger name="java.sql.Statement" level="DEBUG" additivity="false">
+			<AppenderRef ref="DEBUGLOG" />
+		</Logger>
+		<Logger name="java.sql.PreparedStatement" level="DEBUG" additivity="false">
+			<AppenderRef ref="DEBUGLOG" />
+		</Logger>
+		<Logger name="java.sql.ResultSet" level="OFF" additivity="false">
+		</Logger>
+		
+		<Logger name="jdbc.sqlonly" level="DEBUG" additivity="false">
+			<AppenderRef ref="STDOUT" />
+			<AppenderRef ref="TRALOG" />
+		</Logger>
+		
+		<!-- log SQL with timing information, post execution -->
+		<Logger name="jdbc.sqltiming" level="OFF" additivity="false">
+			<AppenderRef ref="STDOUT" />
+			<AppenderRef ref="TRALOG" />
+		</Logger>
+		
+		<!-- only use the two logs below to trace ALL JDBC information,		NOTE:  This can be very voluminous!  -->
+		<!-- log all jdbc calls except ResultSet calls -->
+		<Logger name="jdbc.audit" level="OFF" additivity="false">
+			<AppenderRef ref="STDOUT" />
+			<AppenderRef ref="TRALOG" />
+		</Logger>
+		
+		<!-- log the jdbc ResultSet calls -->
+		<Logger name="jdbc.resultset" level="OFF" additivity="false">
+			<AppenderRef ref="STDOUT" />
+			<AppenderRef ref="TRALOG" />
+		</Logger>
+		
+		<!-- this log is for internal debugging of log4jdbc, itself -->
+		<!-- debug logging for log4jdbc itself -->
+		<Logger name="log4jdbc.debug" level="DEBUG" additivity="false">
+			<AppenderRef ref="STDOUT" />
+			<AppenderRef ref="TRALOG" />
+		</Logger>
+
+		<Logger name="jdbc.resultsettable" level="DEBUG" additivity="false">
+			<AppenderRef ref="STDOUT" />
+		</Logger>
+		
+        <Root level="debug">
+            <AppenderRef ref="ERRORLOG"/>
+            <AppenderRef ref="INFOLOG"/>
+            <AppenderRef ref="DEBUGLOG"/>
+            <AppenderRef ref="TRALOG"/>
+            <AppenderRef ref="STDOUT"/>
+        </Root>
+    </Loggers> 
+</Configuration>
