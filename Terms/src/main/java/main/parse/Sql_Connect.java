@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+//ojdbc로 연결
 public class Sql_Connect {
 	int code;
 	int ga_data = 0;
