@@ -6,9 +6,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Logger;
+
+import org.slf4j.LoggerFactory;
 
 //ojdbc로 연결
 public class Sql_Connect {
+
 	int code;
 	int ga_data = 0;
 	int jo_data = 0;
@@ -17,8 +21,9 @@ public class Sql_Connect {
 	String Sql;
 	Connection conn = null;
 	Statement stmt = null;
-
+	protected static final org.slf4j.Logger log = LoggerFactory.getLogger("Sql_Connect");
 	public void input(AbstractElement element) {
+
 		try {
 			Class.forName("org.mariadb.jdbc.Driver");
 
@@ -32,9 +37,12 @@ public class Sql_Connect {
 
 			try {
 				conn = DriverManager.getConnection(Query, ID, PWD);
-				System.out.println("DB������ġ");
+				System.out.println("DB Ping Test complete");			
+				log.debug("DB Ping Test Complete");
 			} catch (SQLException e) {
-				System.out.println("DB��������ġ");
+			
+				log.debug("DB Ping Test Fail");
+
 				e.printStackTrace();
 			}
 
