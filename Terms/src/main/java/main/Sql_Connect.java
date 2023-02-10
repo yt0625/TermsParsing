@@ -1,4 +1,4 @@
-package main.parse;
+package main;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -25,33 +25,29 @@ public class Sql_Connect {
 	public void input(AbstractElement element) {
 
 		try {
-			Class.forName("org.mariadb.jdbc.Driver");
+			log.debug("==========Oracle DataBase==========");
+			log.debug("==========DB Ping Test Start==========");
+			
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			String ID = "mainline";
+			String PWD = "mainline";
+			String PORTNO = "1521";
 
-			String ID = "root";
-			String PWD = "root";
-			String PORTNO = "3306";
-			String DBNAME = "mariaDB";
-			String TIMEZONE = "serverTimezone=UTC";
-
-			String Query = "jdbc:mysql://localhost:" + PORTNO + "/" + DBNAME + "?" + TIMEZONE;
+			String Query = "jdbc:oracle:thin:@localhost:" + PORTNO + ":Orcl";
 
 			try {
 				conn = DriverManager.getConnection(Query, ID, PWD);
-				System.out.println("DB Ping Test complete");			
-				log.debug("DB Ping Test Complete");
+				log.debug("==========DB Login Test Complete==========");
 			} catch (SQLException e) {
-			
-				log.debug("DB Ping Test Fail");
-
+				log.debug("==========DB Login Test Fail==========");
 				e.printStackTrace();
 			}
-
+			
+			System.out.println("========== SQL Query Start ==========");
 			stmt = conn.createStatement();
-			SQL = "set SQL_SAFE_UPDATES = 0";
-			stmt.execute(SQL);
 			SQL = "delete from parse";
 			stmt.execute(SQL);
-
+			System.out.println("========== parse Table Data Delete ==========");
 			// inputData(element);
 			id(element);
 
@@ -72,7 +68,7 @@ public class Sql_Connect {
 					String text = rs.getString(5);
 					as.append(text + "\n");
 					System.out.println(code + "\t" + level + "\t" + ga_data + "\t" + jo_data + "\t" + text);
-					// System.out.println(text);
+
 
 				}
 
@@ -83,7 +79,7 @@ public class Sql_Connect {
 			}
 
 		} catch (ClassNotFoundException e) {
-			System.out.println("DB�������");
+			log.debug("=========DB Ping Test Fail=======");
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -106,29 +102,57 @@ public class Sql_Connect {
 	}
 
 	public void id(AbstractElement element) throws Exception {
+
 		int level = element.getNo();
 
 		code += 1;
 		String text = element.getText();
+		text = "'"+text.replace("\'", "\\\'").replaceAll("\"", "\\\"")+"'";
+
+		text.replace("\'", "''");
+		System.out.println(text);
+		int textLength = text.length();
+		String text_Query="";
+		if(textLength > 2000) {
+			for(int i=0; i<textLength/2000-1;i++) {
+				int start =1000*i;
+				int end = Math.min(textLength, start+2000);
+				System.out.println(end);
+				if(i==0) {
+					text_Query = "TO_CLOB(dbms_lob.substr("+text.substring(start,end)+"',2000,1)) ";
+					 //System.out.println(text_Query);
+				}else if(i>=1 && !(end > textLength)) {
+					 //System.out.println(text_Query);
+					 String text_add="";
+					 text_add = "|| TO_CLOB(dbms_lob.substr('" + text.substring(start, end) + "',2000," + (i+1) +"))";
+					 text_Query +=text_add;
+				}
+			}
+			text = text_Query;
+		}
+		
+		//System.out.println(text_Query);
+		//System.out.println(text);
 		if (element.isGwanOrAttached()) {
-
+			System.out.println("========== GWAN function start ==========");
 			ga_data += 1;
-			SQL = "insert into parse (CODE , LEVEL , GA_DATA , JO_DATA , TEXT ) values (" + code + "," + level + ","
-					+ ga_data + "," + text_data + ", '" + text.replace("\'", "\\\'").replaceAll("\"", "\\\"") + "')";
-
+			SQL = "insert into parse (CODE , STAGE , GA_DATA , JO_DATA , TXT ) values (" + code + "," + level + ","
+					+ ga_data + "," + text_data + "," + text + ")";
+			System.out.println(SQL);
 		}
 
 		else if (element.isJo()) {
+			System.out.println("========== JO function start ==========");
 			jo_data += 1;
 
-			SQL = "insert into parse (CODE , LEVEL , GA_DATA , JO_DATA , TEXT ) values (" + code + "," + level + ","
-					+ text_data + "," + jo_data + ", '" + text.replace("\'", "\\\'").replaceAll("\"", "\\\"") + "')";
-
+			SQL = "insert into parse (CODE , STAGE , GA_DATA , JO_DATA , TXT ) values (" + code + "," + level + ","
+					+ text_data + "," + jo_data + "," +text+")";
+			System.out.println(SQL);
 		} else {
-
-			SQL = "insert into parse (CODE , LEVEL , GA_DATA , JO_DATA , TEXT ) values (" + code + "," + level + ","
-					+ text_data + "," + text_data + ", '" + text.replace("\'", "\\\'").replaceAll("\"", "\\\"") + "')";
-
+			System.out.println("========== ELSE function start ==========");
+			SQL = "insert into parse (CODE , STAGE , GA_DATA , JO_DATA , TXT ) values (" + code + "," + level + ","
+					+ text_data + "," + text_data + "," +text+")";
+			System.out.println(SQL);
 		}
 
 		stmt.execute(SQL);
@@ -138,4 +162,4 @@ public class Sql_Connect {
 
 		}
 	}
-}
+	}

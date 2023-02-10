@@ -4,7 +4,7 @@
 <%@ page import="java.io.*"%>
 
 <%@ page trimDirectiveWhitespaces="true"%>
-<%@page import="main.parse.*"%>
+<%@page import="main.*"%>
 <%
  
 String fileName = request.getParameter("file_name");

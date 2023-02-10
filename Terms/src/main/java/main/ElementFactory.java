@@ -1,4 +1,4 @@
-package main.parse;
+package main;
 
 public class ElementFactory {
 	static final char[] MOK = "가나다라마바사아자차카타파하".toCharArray();

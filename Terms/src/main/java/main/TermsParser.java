@@ -1,4 +1,4 @@
-package main.parse;
+package main;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -161,7 +161,7 @@ public class TermsParser {
 	protected AbstractElement createElement(XWPFParagraph ph) {
 		String text = ph.getParagraphText();
 		AbstractElement elem = getFactory().createParagraphElement(text);
-
+		
 		return elem;
 	}
 

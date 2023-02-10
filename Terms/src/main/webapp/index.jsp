@@ -1,4 +1,4 @@
-<%@page import="main.parse.*"%>
+<%@page import="main.*"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 

@@ -1,4 +1,4 @@
-package main.parse;
+package main;
 
 public class CellElement extends ContainerElement {
 	protected RowElement row;
