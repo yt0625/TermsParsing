@@ -104,7 +104,7 @@ public class Sql_Connect {
 	public void id(AbstractElement element) throws Exception {
 
 		int level = element.getNo();
-
+		boolean asBool = true;
 		code += 1;
 		String text = element.getText();
 		text = "'"+text.replace("\'", "''").replaceAll("\"", "\"\"");
@@ -113,7 +113,7 @@ public class Sql_Connect {
 		int textLength = text.length();
 		String text_Query="";
 		if(textLength > 1000) {
-			for(int i=0; i<(textLength/1000);i++) {
+			for(int i=0; i<(textLength/1000)+1;i++) {
 				int start =1000*i;
 				int end = Math.min(textLength, start+1000);
 				if(i==0) {
@@ -124,10 +124,14 @@ public class Sql_Connect {
 					 text_Query +=text_add;
 				}
 			}
+			asBool=false;
 			text = text_Query;
-			System.out.println("TEXT :"+text);
 		}
-		text = text+"'";
+		
+		if(asBool == true) {
+			text = text+"'";
+		}
+		
 		if (element.isGwanOrAttached()) {
 			//System.out.println("========== GWAN function start ==========");
 
@@ -157,5 +161,6 @@ public class Sql_Connect {
 			id(child);
 
 		}
+		asBool = true;
 	}
 	}
