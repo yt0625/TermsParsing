@@ -107,49 +107,45 @@ public class Sql_Connect {
 
 		code += 1;
 		String text = element.getText();
-		text = "'"+text.replace("\'", "\\\'").replaceAll("\"", "\\\"")+"'";
+		text = "'"+text.replace("\'", "''").replaceAll("\"", "\"\"");
 
 		text.replace("\'", "''");
-		System.out.println(text);
 		int textLength = text.length();
 		String text_Query="";
-		if(textLength > 2000) {
-			for(int i=0; i<textLength/2000-1;i++) {
+		if(textLength > 1000) {
+			for(int i=0; i<(textLength/1000);i++) {
 				int start =1000*i;
-				int end = Math.min(textLength, start+2000);
-				System.out.println(end);
+				int end = Math.min(textLength, start+1000);
 				if(i==0) {
-					text_Query = "TO_CLOB(dbms_lob.substr("+text.substring(start,end)+"',2000,1)) ";
-					 //System.out.println(text_Query);
-				}else if(i>=1 && !(end > textLength)) {
-					 //System.out.println(text_Query);
+					text_Query = "TO_CLOB(dbms_lob.substr("+text.substring(start,end)+"',1,1000)) ";
+				}else if(i>=1) {
 					 String text_add="";
-					 text_add = "|| TO_CLOB(dbms_lob.substr('" + text.substring(start, end) + "',2000," + (i+1) +"))";
+					 text_add = "|| TO_CLOB(dbms_lob.substr('" + text.substring(start, end) + "',"+(i+1)+",1000))";
 					 text_Query +=text_add;
 				}
 			}
 			text = text_Query;
+			System.out.println("TEXT :"+text);
 		}
-		
-		//System.out.println(text_Query);
-		//System.out.println(text);
+		text = text+"'";
 		if (element.isGwanOrAttached()) {
-			System.out.println("========== GWAN function start ==========");
+			//System.out.println("========== GWAN function start ==========");
+
 			ga_data += 1;
 			SQL = "insert into parse (CODE , STAGE , GA_DATA , JO_DATA , TXT ) values (" + code + "," + level + ","
 					+ ga_data + "," + text_data + "," + text + ")";
-			System.out.println(SQL);
+			//System.out.println(SQL);
 		}
 
 		else if (element.isJo()) {
-			System.out.println("========== JO function start ==========");
+			//System.out.println("========== JO function start ==========");
 			jo_data += 1;
 
 			SQL = "insert into parse (CODE , STAGE , GA_DATA , JO_DATA , TXT ) values (" + code + "," + level + ","
 					+ text_data + "," + jo_data + "," +text+")";
-			System.out.println(SQL);
+			//System.out.println(SQL);
 		} else {
-			System.out.println("========== ELSE function start ==========");
+			//System.out.println("========== ELSE function start ==========");
 			SQL = "insert into parse (CODE , STAGE , GA_DATA , JO_DATA , TXT ) values (" + code + "," + level + ","
 					+ text_data + "," + text_data + "," +text+")";
 			System.out.println(SQL);
