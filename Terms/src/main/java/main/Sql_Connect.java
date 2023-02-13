@@ -21,12 +21,9 @@ public class Sql_Connect {
 	String Sql;
 	Connection conn = null;
 	Statement stmt = null;
-	protected static final org.slf4j.Logger log = LoggerFactory.getLogger("Sql_Connect");
 	public void input(AbstractElement element) {
 
 		try {
-			log.debug("==========Oracle DataBase==========");
-			log.debug("==========DB Ping Test Start==========");
 			
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			String ID = "mainline";
@@ -37,9 +34,7 @@ public class Sql_Connect {
 
 			try {
 				conn = DriverManager.getConnection(Query, ID, PWD);
-				log.debug("==========DB Login Test Complete==========");
 			} catch (SQLException e) {
-				log.debug("==========DB Login Test Fail==========");
 				e.printStackTrace();
 			}
 			
@@ -79,7 +74,6 @@ public class Sql_Connect {
 			}
 
 		} catch (ClassNotFoundException e) {
-			log.debug("=========DB Ping Test Fail=======");
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
