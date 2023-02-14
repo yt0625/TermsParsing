@@ -6,9 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Logger;
-
-import org.slf4j.LoggerFactory;
 
 //ojdbc로 연결
 public class Sql_Connect {
@@ -30,7 +27,7 @@ public class Sql_Connect {
 			String PWD = "mainline";
 			String PORTNO = "1521";
 
-			String Query = "jdbc:oracle:thin:@localhost:" + PORTNO + ":Orcl";
+			String Query = "jdbc:oracle:thin:@localhost:" + PORTNO + ":oracle";
 
 			try {
 				conn = DriverManager.getConnection(Query, ID, PWD);
